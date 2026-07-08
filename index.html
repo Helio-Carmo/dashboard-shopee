@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Torre de Controle · Linehaul CEVA × Shopee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">S</span>
+    <div class="brand-text">
+      <h1>Torre de Controle Linehaul</h1>
+      <p>CEVA × Shopee</p>
+    </div>
+  </div>
+
+  <div class="filters" id="filters">
+    <div class="filter">
+      <label for="f-ano">Ano</label>
+      <select id="f-ano"></select>
+    </div>
+    <div class="filter">
+      <label for="f-mes">Mês</label>
+      <select id="f-mes"></select>
+    </div>
+    <div class="filter">
+      <label for="f-semana">Semana</label>
+      <select id="f-semana"></select>
+    </div>
+    <div class="filter">
+      <label for="f-dia">Dia</label>
+      <select id="f-dia"></select>
+    </div>
+    <div class="filter">
+      <label for="f-tsp">Transportadora</label>
+      <select id="f-tsp">
+        <option value="">Todas</option>
+        <option value="TAC">TAC</option>
+        <option value="TERCEIRO">TERCEIRO</option>
+      </select>
+    </div>
+    <button id="f-limpar" class="btn-ghost" type="button">Limpar filtros</button>
+  </div>
+
+  <div class="data-source" id="data-source" title="Origem dos dados">planilha local</div>
+</header>
+
+<main>
+
+  <!-- Resumo operacional -->
+  <section class="strip" id="strip-resumo" aria-label="Resumo operacional"></section>
+
+  <!-- KPIs -->
+  <section class="kpi-grid" id="kpi-grid" aria-label="Indicadores de performance"></section>
+
+  <!-- Mapa + rotas -->
+  <section class="map-section">
+    <div class="panel map-panel">
+      <div class="panel-head">
+        <div>
+          <h2>Mapa das rotas</h2>
+          <p class="panel-sub" id="map-sub">Intensidade por volume no período filtrado</p>
+        </div>
+        <div class="seg" role="group" aria-label="Tipo de visualização do mapa">
+          <button class="seg-btn is-active" data-vista="calor" type="button">Mapa de calor</button>
+          <button class="seg-btn" data-vista="numeros" type="button">Nº de viagens</button>
+        </div>
+        <div class="seg" role="group" aria-label="Base do mapa">
+          <button class="seg-btn is-active" data-heat="ambos" type="button">Origem + Destino</button>
+          <button class="seg-btn" data-heat="origem" type="button">Origem</button>
+          <button class="seg-btn" data-heat="destino" type="button">Destino</button>
+        </div>
+        <div class="seg" role="group" aria-label="Peso do mapa de calor" id="seg-peso">
+          <button class="seg-btn is-active" data-peso="viagens" type="button">Viagens</button>
+          <button class="seg-btn" data-peso="pacotes" type="button">Pacotes</button>
+        </div>
+      </div>
+      <div id="map" aria-label="Mapa das rotas"></div>
+      <p class="map-note" id="map-note"></p>
+    </div>
+
+    <div class="panel routes-panel">
+      <div class="panel-head">
+        <div>
+          <h2>Principais fluxos O→D</h2>
+          <p class="panel-sub">Ordenado por viagens</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="tbl-rotas">
+          <thead>
+            <tr><th>Origem → Destino</th><th class="num">Viagens</th><th class="num">Pacotes</th><th class="num">OTD dest.</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Evolução no tempo -->
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2 id="chart-titulo">Viagens por período</h2>
+        <p class="panel-sub">Barras = viagens · linha = % ETA destino no prazo (por pacote)</p>
+      </div>
+    </div>
+    <div id="chart-diario" class="chart"></div>
+  </section>
+
+  <!-- Por tipo de veículo -->
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Viagens por tipo de veículo</h2>
+        <p class="panel-sub">Total de viagens e pacotes no período filtrado</p>
+      </div>
+    </div>
+    <div id="chart-veiculo" class="chart chart-veiculo"></div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <span>Dashboard estático · HTML + CSS + JS · dados via Google Apps Script ou cópia local</span>
+  <span id="foot-periodo"></span>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
