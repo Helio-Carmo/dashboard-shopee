@@ -233,7 +233,7 @@ function renderResumo(rows) {
     ["KM planejado", fmt(km)],
   ];
   el.innerHTML = itens.map(([l, v]) =>
-    `<div class="strip-item"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+    `<div class="strip-item"><div class="v">${v}<span class="spin" aria-hidden="true"></span></div><div class="l">${l}</div></div>`).join("");
 }
 
 function renderKpis(rows) {
@@ -249,7 +249,7 @@ function renderKpis(rows) {
       <div class="kpi-top">
         <div class="kpi-name">${def.nome}</div>
       </div>
-      <div class="kpi-value">${valor == null ? "—" : fmt(valor, 1)}<small>${valor == null ? "" : "%"}</small></div>
+      <div class="kpi-value">${valor == null ? "—" : fmt(valor, 1)}<small>${valor == null ? "" : "%"}</small><span class="spin" aria-hidden="true"></span></div>
       <div class="kpi-bar">
         <span style="width:${barW}%"></span>
         <i class="tick" style="left:${tick(def.minimo)}%" title="Mínimo ${def.minimo}%"></i>
@@ -581,11 +581,45 @@ function ligarEventos() {
   segToggle("peso", v => heatPeso = v);
 }
 
+/* ---------- Atualização manual e automática ---------- */
+let atualizando = false;
+let timerAuto = null;
+
+async function atualizar() {
+  if (atualizando) return;
+  atualizando = true;
+  document.body.classList.add("is-refreshing");           // mostra os spinners ao lado dos números
+  document.getElementById("btn-atualizar").disabled = true;
+  try {
+    const brutas = await carregarDados();
+    DADOS = brutas.map(normalizarLinha).filter(r => r.data || r.semana);
+    renderTudo();
+    const agora = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    const fonte = document.getElementById("data-source");
+    fonte.textContent = fonte.textContent.replace(/ · atualizado.*$/, "") + ` · atualizado ${agora}`;
+  } finally {
+    document.body.classList.remove("is-refreshing");
+    document.getElementById("btn-atualizar").disabled = false;
+    atualizando = false;
+  }
+}
+
+function reprogramarAuto() {
+  if (timerAuto) { clearInterval(timerAuto); timerAuto = null; }
+  const min = Number(document.getElementById("f-intervalo").value);
+  if (min > 0) timerAuto = setInterval(atualizar, min * 60 * 1000);
+}
+
+function ligarEventosAtualizacao() {
+  document.getElementById("btn-atualizar").addEventListener("click", atualizar);
+  document.getElementById("f-intervalo").addEventListener("change", reprogramarAuto);
+}
+
 /* ---------- Boot ---------- */
 (async function init() {
   initMapa();
   ligarEventos();
-  const brutas = await carregarDados();
-  DADOS = brutas.map(normalizarLinha).filter(r => r.data || r.semana);
-  renderTudo();
+  ligarEventosAtualizacao();
+  await atualizar();
+})();
 })();
