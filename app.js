@@ -622,4 +622,3 @@ function ligarEventosAtualizacao() {
   ligarEventosAtualizacao();
   await atualizar();
 })();
-})();
