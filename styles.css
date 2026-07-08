@@ -75,6 +75,29 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   transition:.15s;
 }
 .btn-ghost:hover{color:var(--text);border-color:var(--shopee)}
+.refresh-row{display:flex;gap:6px}
+.refresh-box input{
+  width:64px;
+  background:var(--bg-inset);border:1px solid var(--line);border-radius:8px;
+  color:var(--text);font-family:var(--font-mono);font-size:12px;
+  padding:7px 8px;text-align:center;
+}
+.refresh-box input:hover{border-color:#33404e}
+.btn-refresh{display:flex;align-items:center;gap:6px}
+.btn-refresh:disabled{opacity:.55;cursor:wait}
+.btn-refresh:disabled svg{animation:girar 1s linear infinite}
+
+/* spinner ao lado de cada número durante a atualização */
+.spin{
+  display:none;
+  width:12px;height:12px;margin-left:8px;vertical-align:middle;
+  border:2px solid var(--line);border-top-color:var(--shopee);
+  border-radius:50%;
+  animation:girar .8s linear infinite;
+}
+body.is-refreshing .spin{display:inline-block}
+@keyframes girar{to{transform:rotate(360deg)}}
+
 .data-source{
   font-family:var(--font-mono);font-size:10px;color:var(--text-faint);
   border:1px dashed var(--line);border-radius:99px;padding:4px 10px;
