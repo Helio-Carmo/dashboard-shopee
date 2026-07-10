@@ -601,6 +601,7 @@ async function atualizar() {
     document.body.classList.remove("is-refreshing");
     document.getElementById("btn-atualizar").disabled = false;
     atualizando = false;
+    esconderOverlay(); // failsafe: nunca deixa o overlay preso na tela
   }
 }
 
@@ -612,13 +613,32 @@ function reprogramarAuto() {
 
 function ligarEventosAtualizacao() {
   document.getElementById("btn-atualizar").addEventListener("click", atualizar);
-  document.getElementById("f-intervalo").addEventListener("change", reprogramarAuto);
+  // "input" dispara a cada tecla; "change" cobre as setinhas do campo numérico
+  const campo = document.getElementById("f-intervalo");
+  campo.addEventListener("input", reprogramarAuto);
+  campo.addEventListener("change", reprogramarAuto);
 }
 
-/* ---------- Boot ---------- */
-(async function init() {
+function esconderOverlay() {
+  const ov = document.getElementById("loading-overlay");
+  if (!ov || ov.classList.contains("is-done")) return;
+  ov.classList.add("is-done");
+  setTimeout(() => ov.remove(), 400); // remove do DOM após o fade
+}
+
+/* ---------- Boot ----------
+   1ª fase: renderiza a cópia local imediatamente (tela nunca fica em branco);
+   2ª fase: busca os dados ao vivo em segundo plano, com os spinners ligados. */
+(function init() {
   initMapa();
   ligarEventos();
   ligarEventosAtualizacao();
-  await atualizar();
+
+  DADOS = (window.EMBEDDED_DATA || []).map(normalizarLinha).filter(r => r.data || r.semana);
+  renderTudo();
+  document.getElementById("data-source").textContent =
+    CONFIG.SHEETS_API_URL ? "planilha local · buscando ao vivo…" : "planilha local";
+  esconderOverlay();
+
+  if (CONFIG.SHEETS_API_URL) atualizar();
 })();
