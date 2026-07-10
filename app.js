@@ -630,6 +630,7 @@ function esconderOverlay() {
    1ª fase: renderiza a cópia local imediatamente (tela nunca fica em branco);
    2ª fase: busca os dados ao vivo em segundo plano, com os spinners ligados. */
 (function init() {
+  console.log("Torre de Controle · app.js v4"); // confira no console qual versão está rodando
   initMapa();
   ligarEventos();
   ligarEventosAtualizacao();
