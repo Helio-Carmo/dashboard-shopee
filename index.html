@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
 
@@ -17,6 +17,14 @@
   <div class="load-spin" aria-hidden="true"></div>
   <p>Carregando dados da operação…</p>
 </div>
+<script>
+  // Failsafe independente do app.js: se em 12s ninguém remover o overlay
+  // (app.js antigo em cache, erro de rede etc.), ele se remove sozinho.
+  setTimeout(function () {
+    var o = document.getElementById("loading-overlay");
+    if (o) { o.style.opacity = "0"; o.style.pointerEvents = "none"; setTimeout(function(){ o.remove(); }, 400); }
+  }, 12000);
+</script>
 
 <header class="topbar">
   <div class="brand">
@@ -57,7 +65,7 @@
     <div class="filter refresh-box">
       <label for="f-intervalo">Auto (min)</label>
       <div class="refresh-row">
-        <input id="f-intervalo" type="number" value="3" min="0" step="1" placeholder="0" title="Minutos entre atualizações automáticas · 0 = desligado">
+        <input id="f-intervalo" type="number" min="0" step="1" placeholder="0" title="Minutos entre atualizações automáticas · 0 = desligado">
         <button id="btn-atualizar" class="btn-ghost btn-refresh" type="button" title="Atualizar agora">
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M13.6 2.4v3.2h-3.2M2.4 13.6v-3.2h3.2M12.9 6A5.2 5.2 0 0 0 3.6 4.9L2.4 6M3.1 10a5.2 5.2 0 0 0 9.3 1.1l1.2-1.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span>Atualizar</span>
@@ -152,7 +160,7 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
-<script src="data.js"></script>
-<script src="app.js"></script>
+<script src="data.js?v=4"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
